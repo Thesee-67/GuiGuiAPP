@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     # === APPLICATION ===
     APP_NAME: str = "Training Escalade"
     APP_VERSION: str = "1.0.0"
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
     DEBUG: bool = False
     ENVIRONMENT: str = "production"
     APP_URL: str = "https://training.climbingthenet.fr"
@@ -33,7 +35,7 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # === BASE DE DONNÉES ===
-    DATABASE_TYPE: str = "mysql"  # mysql ou sqlite
+    DATABASE_TYPE: str = "sqlite"  # mysql ou sqlite
     
     # MySQL
     DB_HOST: str = "localhost"
