@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables (IMPORTANT - contient mots de passe)
+.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database/training.db
+
+# Logs
+logs/
+*.log
+
+# Uploads (photos utilisateurs)
+public_html/uploads/routes/user_*/
+public_html/uploads/avatars/user_*/
+!public_html/uploads/routes/.gitkeep
+!public_html/uploads/avatars/.gitkeep
+
+# Backups
+backups/daily/
+backups/weekly/
+backups/manual/
+*.sql
+*.dump
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# PlanetHoster specific
+.cpanel/
+.htpasswds/
+tmp/restart.txt

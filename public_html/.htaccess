@@ -1,0 +1,143 @@
+# ============================================
+# Training Escalade - Configuration Apache
+# PlanetHoster avec Passenger
+# ============================================
+
+# === PASSENGER CONFIGURATION ===
+PassengerEnabled on
+PassengerAppRoot /home/TON_USER/training-escalade
+PassengerAppType wsgi
+PassengerStartupFile passenger_wsgi.py
+PassengerPython /home/TON_USER/training-escalade/venv/bin/python
+
+# Environnement
+PassengerAppEnv production
+
+# Performance
+PassengerMaxPoolSize 3
+PassengerMinInstances 1
+
+# === FORCE HTTPS ===
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirection HTTP vers HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Supprimer www (optionnel)
+    RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+</IfModule>
+
+# === PROTECTION IP (optionnel - décommenter si besoin) ===
+# <RequireAll>
+#     Require all granted
+#     # Bloquer tout le monde sauf ces IPs
+#     # Require ip 192.168.1.100
+#     # Require ip 78.xxx.xxx.xxx
+# </RequireAll>
+
+# === SÉCURITÉ HEADERS ===
+<IfModule mod_headers.c>
+    # Protection XSS
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Empêcher le MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Clickjacking protection
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Content Security Policy
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self'"
+    
+    # Permissions Policy
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# === PROTECTION FICHIERS SENSIBLES ===
+# Bloquer l'accès aux fichiers de config
+<FilesMatch "\.(env|py|pyc|log|sql|db|sqlite|sqlite3)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquer l'accès aux dossiers sensibles
+RedirectMatch 404 /\.git
+RedirectMatch 404 /\.env
+RedirectMatch 404 /venv
+RedirectMatch 404 /backend
+RedirectMatch 404 /database
+RedirectMatch 404 /logs
+RedirectMatch 404 /backups
+
+# === UPLOADS - LIMITE TAILLE ===
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+</IfModule>
+
+# === CACHE FICHIERS STATIQUES ===
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    
+    # CSS et JS
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    
+    # Fonts
+    ExpiresByType font/woff "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 month"
+    ExpiresByType application/font-woff "access plus 1 month"
+    ExpiresByType application/font-woff2 "access plus 1 month"
+</IfModule>
+
+# Cache-Control headers
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|css|js|woff|woff2|ttf)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=2592000"
+    </IfModule>
+</FilesMatch>
+
+# === COMPRESSION GZIP ===
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# === CHARSET UTF-8 ===
+AddDefaultCharset UTF-8
+<IfModule mod_mime.c>
+    AddCharset UTF-8 .html .css .js .json .xml
+</IfModule>
+
+# === PAGE D'ERREUR PERSONNALISÉE (optionnel) ===
+# ErrorDocument 404 /pages/404.html
+# ErrorDocument 500 /pages/500.html
+
+# === DÉSACTIVER LISTING DOSSIERS ===
+Options -Indexes
+
+# === SERVIR INDEX.HTML PAR DÉFAUT ===
+DirectoryIndex index.html index.htm
+
+# === LOGS (optionnel) ===
+# CustomLog logs/access.log combined
+# ErrorLog logs/error.log
